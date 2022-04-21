@@ -20,12 +20,12 @@ class GameSprite (sprite.Sprite):
 class Player(GameSprite): 
     def update_L(self): #МЕТОД ДЛЯ УПРАВЛЕНИЯ ЛЕВОЙ РАКЕТКОЙ W/S
         keys = key.get_pressed()
-        if keys[K_S] and self.rect.x > 5:
+        if keys[K_s] and self.rect.x > 5:
             self.rect.Y -= self.speed
-        if keys[K_W] and self.rect.x < width - 50:
+        if keys[K_w] and self.rect.x < width - 50:
             self.rect.y += self.speed
 
-    def update_L(self): #МЕТОД ДЛЯ УПРАВЛЕНИЯ ПРАВОЙ РАКЕТКОЙ UP/DOWN
+    def update_R(self): #МЕТОД ДЛЯ УПРАВЛЕНИЯ ПРАВОЙ РАКЕТКОЙ UP/DOWN
         keys = key.get_pressed()
         if keys[K_DOWN] and self.rect.x > 5:
             self.rect.y -= self.speed
@@ -39,12 +39,43 @@ display.set_caption("Пинг-Понг")
 back = (200, 255, 255)
 window.fill(back)
 
+speed_x = 3
+speed_y = 3
+
 game = True
 finish = False
 FPS = 60
 clock = time.Clock()
 
 font.init()
-font1 = font.SysFont('Arial', 36)
+font1 = font.Font(None, 36)
 lose1 = font1.render('Игрок 1 проиграл!', True, (255, 0, 0))
 lose2 = font1.render('Игрок 2 проиграл!', True, (255, 0, 0))
+
+racet1 = Player('ракетки.png', 30, 200, 4, 50, 150)
+racet2 = Player('ракетки.png', 620, 200, 4, 50, 150)
+ball = GameSprite('ball.png', 200, 200, 4, 50, 50)
+
+while game:
+    for e in event.get():
+        if e.type == QUIT:
+            game = False
+    if finish != True:
+        window.fill(back)
+        racet1.update_L()
+        racet2.update_R()
+        ball.rect.x += speed_x
+        ball.rect.x += speed_x
+
+    if sprite.collide_rect(racet1, ball) or sprite.collide_rect(racet2, ball):
+        speed_x *= -1
+
+    if ball.rect.y > width - 50 or ball.rect.x < 0:
+        speed_y *= -1
+
+        racet1.reset()
+        racet2.reset()
+        ball.reset()
+
+    display.update()
+    clock.tick(FPS)
